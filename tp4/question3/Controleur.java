@@ -37,12 +37,36 @@ public class Controleur extends JPanel {
         donnee.addActionListener(null /* null est à remplacer */);
         JPanel boutons = new JPanel();
         boutons.setLayout(new FlowLayout());
-        boutons.add(push);  push.addActionListener(null /* null est à remplacer */);
-        boutons.add(add);   add.addActionListener(null /* null est à remplacer */);
-        boutons.add(sub);   sub.addActionListener(null /* null est à remplacer */);
-        boutons.add(mul);   mul.addActionListener(null /* null est à remplacer */);
-        boutons.add(div);   div.addActionListener(null /* null est à remplacer */);
-        boutons.add(clear); clear.addActionListener(null /* null est à remplacer */);
+        boutons.add(push);  
+        
+        push.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent ae){
+            try{
+                pile.empiler(operande());
+                actualiserInterface();
+            } catch(Exception exception) {}
+            }
+        });
+        
+        boutons.add(add);   
+        add.addActionListener(new OperationListener('+'));
+        boutons.add(sub);   
+        sub.addActionListener(new OperationListener('-'));
+        boutons.add(mul);   
+        mul.addActionListener(new OperationListener('*'));
+        boutons.add(div);   
+        div.addActionListener(new OperationListener('/'));
+        boutons.add(clear); 
+        clear.addActionListener(new ActionListener() {     
+            public void actionPerformed(ActionEvent ae){
+            try{
+                while(!pile.estVide()){
+                     pile.depiler();
+                }
+                actualiserInterface();
+            } catch(Exception exception) {}
+            }
+        });
         add(boutons);
         boutons.setBackground(Color.red);
         actualiserInterface();
@@ -50,12 +74,43 @@ public class Controleur extends JPanel {
 
     public void actualiserInterface() {
         // à compléter
+        donnee.setText("");
     }
 
     private Integer operande() throws NumberFormatException {
         return Integer.parseInt(donnee.getText());
     }
 
+    private class OperationListener implements ActionListener {
+        char operation;
+        OperationListener(char operation){
+            this.operation = operation;
+        }
+        public void actionPerformed(ActionEvent ae){
+            Integer n1 = null;
+            Integer n2 = null;
+            try{
+
+                n1 = pile.depiler();
+                n2 = pile.depiler();
+                switch(operation){
+                
+                    case '+' : pile.empiler(n1 + n2);break;
+                    case '-' : pile.empiler(n2 - n1);break;
+                    case '*' : pile.empiler(n1 * n2);break;
+                    case '/' : 
+                    if (n1 != 0){
+                        pile.empiler(n2/n1);
+                    }
+                    break;
+            
+                }
+                actualiserInterface();
+            }
+            catch(Exception ex){}
+        }
+            
+    }
     // à compléter
     // en cas d'exception comme division par zéro, 
     // mauvais format de nombre suite à l'appel de la méthode operande
